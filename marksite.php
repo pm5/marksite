@@ -228,7 +228,7 @@ class Marksite_Parser
         return $output;
     }
 
-    function write_themed($dst_file, $title, $contents)
+    function write_themed($dir, $dst_file, $title, $transformed)
     {
         // some usable variable for theme
         $home_path = MARKSITE_ABSOLUTE_PATH;
@@ -238,6 +238,7 @@ class Marksite_Parser
             ob_start();
 
             // run theme, generate content
+            include MARKSITE_SRC_PATH."$dir"."info.php";
             include MARKSITE_THEME_PATH."page.php";
 
             // get output
@@ -294,7 +295,7 @@ class Marksite_Parser
                 $this->manifest['static'] .= "$act_file\n";
             } else {
                 $contents = $this->generate_context($src_file);
-                $this->write_themed($dst_file, $title, $contents);
+                $this->write_themed($dir, $dst_file, $title, $contents);
 
                 $this->manifest['md5summings'] .= md5_file("$dst_file.html");
                 if ($file == 'index') {
