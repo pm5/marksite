@@ -212,7 +212,11 @@ class Marksite_Parser
                 $output .= "<li>";
             }
 
-            $output .= "<a href=\"$uri\">$title</a>";
+            if (preg_match("/^http:\/\//", $file)) {
+                $output .= "<a href=\"$uri\" target=\"_blank\">$title</a>";
+            } else {
+                $output .= "<a href=\"$uri\">$title</a>";
+            }
 
             if (   $depth>1
                 && isset($menuitem['menu'])
