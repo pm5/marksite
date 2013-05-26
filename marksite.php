@@ -86,11 +86,7 @@ class Marksite_Parser
 
     function parse()
     {
-        if (is_dir(MARKSITE_DST_PATH)) {
-            $this->empty_dir(MARKSITE_DST_PATH);
-        }
-
-        if (mkdir(MARKSITE_DST_PATH)) {
+        if (is_dir(MARKSITE_DST_PATH) || mkdir(MARKSITE_DST_PATH)) {
             print("## Generating Menu\n");
             $this->menu = $this->prepare_menu("");
             print("\n");
