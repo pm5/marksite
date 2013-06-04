@@ -281,7 +281,7 @@ class Marksite_Parser
             array_push($this->current, $file);
 
             if (is_dir($src_file)) {
-                if (mkdir($dst_file)) {
+                if (is_dir($dst_file) || mkdir($dst_file)) {
                     $this->generate_contents($dir.$file."/");
                 } else {
                     die("Cannot create new directory: $dst_file");
