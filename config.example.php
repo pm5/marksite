@@ -10,9 +10,9 @@
 @define( "MARKSITE_APPCACHE", "all" );
 
 # path to theme
-@define( "MARKSITE_THEME_PATH", "../../theme/marksite/" );
+@define( "MARKSITE_TEMPLATE_PATH", "../../theme/marksite/page.php" );
 
 # website path
-@define( "MARKSITE_ABSOLUTE_PATH", "/2013-beta/" );
+@define( "MARKSITE_ABSOLUTE_PATH", "/2014-beta/" );
 
 ?>

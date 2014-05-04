@@ -239,7 +239,7 @@ class Marksite_Parser
 
             // run theme, generate content
             include MARKSITE_SRC_PATH."$dir"."info.php";
-            include MARKSITE_THEME_PATH."page.php";
+            include MARKSITE_TEMPLATE_PATH;
 
             // get output
             $themed_contents = ob_get_contents();
