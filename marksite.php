@@ -91,7 +91,7 @@ class Marksite_Parser
             $this->menu = $this->prepare_menu("");
             print("\n");
 
-            if (is_dir(MARKSITE_BLOCKS_PATH)) {
+            if (defined('MARKSITE_BLOCKS_PATH') && is_dir(MARKSITE_BLOCKS_PATH)) {
                 print("## Generating Blocks\n");
                 $this->prepare_blocks(MARKSITE_BLOCKS_PATH);
                 print("\n");
