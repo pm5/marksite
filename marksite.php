@@ -6,8 +6,8 @@
  * See COPYING for details.
  */
 
-// include
-include_once "config.php";
+// include config.php if existing, otherwise inherit from caller
+@include_once "config.php";
 include_once "markdown.php";
 
 class Marksite_Parser

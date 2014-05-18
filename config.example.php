@@ -2,9 +2,8 @@
 # marksite configurations
 
 # path to website contents
-@define( "MARKSITE_SRC_PATH", "../../src/" );
+@define( "MARKSITE_SRC_PATH", "../src-tmp/" );
 @define( "MARKSITE_DST_PATH", "../tmp/" );
-@define( "MARKSITE_BLOCKS_PATH", "../../src/blocks/" );
 
 # appcache generation method: all, parsed, none
 @define( "MARKSITE_APPCACHE", "all" );
