@@ -228,7 +228,7 @@ class Marksite_Parser
         return $output;
     }
 
-    function write_themed($dir, $dst_file, $title, $transformed)
+    function write_themed($dir, $dst_file, $title, $transformed, $template = MARKSITE_TEMPLATE_PATH)
     {
         // some usable variable for theme
         $home_path = MARKSITE_ABSOLUTE_PATH;
@@ -239,7 +239,7 @@ class Marksite_Parser
 
             // run theme, generate content
             include MARKSITE_SRC_PATH."$dir"."info.php";
-            include MARKSITE_TEMPLATE_PATH;
+            include $template;
 
             // get output
             $themed_contents = ob_get_contents();
@@ -294,8 +294,13 @@ class Marksite_Parser
                 $this->manifest['md5summings'] .= md5_file($dst_file);
                 $this->manifest['static'] .= "$act_file\n";
             } else {
-                $contents = $this->generate_context($src_file);
-                $this->write_themed($dir, $dst_file, $title, $contents);
+                $post = $this->generate_context($src_file);
+                $template_dir = dirname(MARKSITE_TEMPLATE_PATH);
+                if (array_key_exists("layout", $post)) {
+                    $this->write_themed($dir, $dst_file, $title, $post['contents'], $template_dir.'/'.$post['layout']);
+                } else {
+                    $this->write_themed($dir, $dst_file, $title, $post['contents']);
+                }
 
                 $this->manifest['md5summings'] .= md5_file("$dst_file.html");
                 if ($file == 'index') {
@@ -318,8 +323,38 @@ class Marksite_Parser
             }
             $block_name = preg_replace("/\.([^\.]*)$/","",$filename);
             $src_file   = $dir.$block_name;
-            $this->block[$block_name] = $this->generate_context($src_file);
+            $this->block[$block_name] = $this->generate_context($src_file)['contents'];
         }
+    }
+
+    function _parseMeta($text)
+    {
+        $meta = array();
+        foreach (explode("\n", $text) as $line) {
+            if ($line) {
+                list($name, $value) = explode(": ", $line);
+                $meta[$name] = $value;
+            }
+        }
+        return $meta;
+    }
+
+    function _generate_from_markdown($page, $src_file, $file_type = 'md') {
+        // read file, convert it from Markdown to HTML
+        echo $src_file;
+        $size = filesize("$src_file.$file_type");
+        if ($size > 0) {
+            $buf = fread($page, $size);
+            if (substr($buf, 0, 3) === '---') {
+                $chunks = explode("---\n", $buf, 3);
+                $contents = Markdown($chunks[count($chunks) === 1 ? 0 : 2]);
+                $meta = count($chunks) === 1 ? array() : $this->_parseMeta($chunks[1]);
+                return array_merge($meta, array('contents' => $contents));
+            } else {
+                return array('contents' => $buf);
+            }
+        }
+        return array('contents' => null);
     }
 
     function generate_context($src_file)
@@ -330,28 +365,16 @@ class Marksite_Parser
             && $page = fopen("$src_file.md", "r")
         ) {
             print("* $src_file.md\n");
-
-            // read file, convert it from Markdown to HTML
-            $size = filesize("$src_file.md");
-            if ($size > 0) {
-                list($dummy, $meta, $text) = explode("---\n", fread($page, $size));
-                $text ||= $dummy;
-                $contents = Markdown($text);
-            }
+            $result = $this->_generate_from_markdown($page, $src_file, "md");
             fclose($page);
+            return $result;
         } elseif (file_exists("$src_file.markdown")
                && $page = fopen("$src_file.markdown", "r")
         ) {
             print("* $src_file.markdown\n");
-
-            // read file, convert it from Markdown to HTML
-            $size = filesize("$src_file.markdown");
-            if ($size > 0) {
-                list($dummy, $meta, $text) = explode("---\n", fread($page, $size));
-                $text ||= $dummy;
-                $contents = Markdown(fread($text, $size));
-            }
+            $result = $this->_generate_from_markdown($page, $src_file, "markdown");
             fclose($page);
+            return $result;
         } elseif (file_exists("$src_file.php")) {
             print("* $src_file.php\n");
 
@@ -373,7 +396,7 @@ class Marksite_Parser
             print("* Warning: $src_file.{markdown|md|php|html} does not exist.\n");
         }
 
-        return $contents;
+        return array('contents' => $contents);
     }
 
     function write_manifest() {
