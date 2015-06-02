@@ -334,7 +334,9 @@ class Marksite_Parser
             // read file, convert it from Markdown to HTML
             $size = filesize("$src_file.md");
             if ($size > 0) {
-                $contents = Markdown(fread($page, $size));
+                list($dummy, $meta, $text) = explode("---\n", fread($page, $size));
+                $text ||= $dummy;
+                $contents = Markdown($text);
             }
             fclose($page);
         } elseif (file_exists("$src_file.markdown")
@@ -345,7 +347,9 @@ class Marksite_Parser
             // read file, convert it from Markdown to HTML
             $size = filesize("$src_file.markdown");
             if ($size > 0) {
-                $contents = Markdown(fread($page, $size));
+                list($dummy, $meta, $text) = explode("---\n", fread($page, $size));
+                $text ||= $dummy;
+                $contents = Markdown(fread($text, $size));
             }
             fclose($page);
         } elseif (file_exists("$src_file.php")) {
