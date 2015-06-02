@@ -351,7 +351,7 @@ class Marksite_Parser
                 $meta = count($chunks) === 1 ? array() : $this->_parseMeta($chunks[1]);
                 return array_merge($meta, array('contents' => $contents));
             } else {
-                return array('contents' => $buf);
+                return array('contents' => Markdown($buf));
             }
         }
         return array('contents' => null);
